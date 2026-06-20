@@ -1,42 +1,61 @@
----
+version: "3.8"
+
 services:
   db:
-    image: shaikmustafa/flm2026:dbimage
+    image: pranithamarri/pyapp:db_image
     ports:
       - "3306:3306"
+    networks:
+      - mynetwork
     deploy:
       replicas: 1
-  auth_service:
-    image: shaikmustafa/flm2026:authimage
+
+  auth:
+    image: pranithamarri/pyapp:auth_image
     ports:
       - "5001:5001"
-    deploy:
-      replicas: 1
+    networks:
+      - mynetwork
     depends_on:
       - db
-  book_service:
-    image: shaikmustafa/flm2026:bookimage
+    deploy:
+      replicas: 1
+
+  book:
+    image: pranithamarri/pyapp:book_image
     ports:
       - "5002:5002"
-    deploy:
-      replicas: 1
+    networks:
+      - mynetwork
     depends_on:
       - db
-  borrow_service:
-    image: shaikmustafa/flm2026:borrowimage
+    deploy:
+      replicas: 1
+
+  borrow:
+    image: pranithamarri/pyapp:borrow_image
     ports:
       - "5003:5003"
-    deploy:
-      replicas: 1
+    networks:
+      - mynetwork
     depends_on:
       - db
-  app_service:
-    image: shaikmustafa/flm2026:appimage
-    ports:
-      - "5000:5000"
     deploy:
       replicas: 1
+
+  frontend:
+    image: pranithamarri/pyapp:frontend
+    ports:
+      - "5000:5000"
+    networks:
+      - mynetwork
     depends_on:
-      - auth_service
-      - book_service
-      - borrow_service
+      - auth
+      - book
+      - borrow
+    deploy:
+      replicas: 1
+
+networks:
+  mynetwork:
+    driver: overlay
